@@ -1,0 +1,19 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Logs & scratch
+logs/
+*.log
+npm-debug.log*
+.system_generated/
+scratch/
+
+# OS metadata
+.DS_Store
+Thumbs.db

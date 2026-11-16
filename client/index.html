@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSE Fest — Judge & Assignment Management System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-badge">CSE Fest 2026</div>
+      <h1>Judge Invitation & Assignment System</h1>
+      <p class="subtitle">Administrative Portal — Phase 1 Core Infrastructure</p>
+    </header>
+
+    <main class="main-content">
+      <!-- Login Section -->
+      <section id="login-section" class="card" aria-labelledby="login-heading">
+        <h2 id="login-heading">Admin Sign In</h2>
+        <p class="section-desc">Authenticate to access university event administration.</p>
+
+        <div id="login-error" class="alert alert-error" role="alert" style="display: none;"></div>
+
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              placeholder="admin@csefest.edu" 
+              required 
+              autocomplete="username"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              placeholder="••••••••••••" 
+              required 
+              autocomplete="current-password"
+            >
+          </div>
+
+          <button type="submit" id="login-btn" class="btn btn-primary">
+            <span class="btn-text">Sign In</span>
+            <span class="spinner" style="display: none;" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <div class="credentials-hint">
+          <strong>Default Seed Accounts:</strong>
+          <ul>
+            <li>Admin: <code>admin@csefest.edu</code> / <code>ChangeMe123!</code></li>
+            <li>Coordinator: <code>coordinator@csefest.edu</code> / <code>ChangeMe123!</code></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Authenticated Dashboard Section -->
+      <section id="dashboard-section" class="card" aria-labelledby="dashboard-heading" style="display: none;">
+        <div class="dashboard-header">
+          <div>
+            <h2 id="dashboard-heading">Administrative Console</h2>
+            <p class="section-desc">Session authenticated and verified.</p>
+          </div>
+          <button id="logout-btn" class="btn btn-secondary">Sign Out</button>
+        </div>
+
+        <div class="user-profile-card">
+          <div class="profile-avatar" id="user-avatar" aria-hidden="true">A</div>
+          <div class="profile-info">
+            <h3 id="user-fullname">Admin Name</h3>
+            <p id="user-email" class="text-muted">admin@csefest.edu</p>
+            <span id="user-role" class="badge badge-role">admin</span>
+          </div>
+        </div>
+
+        <div class="status-grid">
+          <div class="status-card">
+            <div class="status-title">Database Status</div>
+            <div id="db-status-badge" class="status-value status-online">Connected</div>
+            <div class="status-sub">PostgreSQL 18 — Constraints Active</div>
+          </div>
+          <div class="status-card">
+            <div class="status-title">System Phase</div>
+            <div class="status-value">Phase 1 Active</div>
+            <div class="status-sub">Core Schema, Security & Auth</div>
+          </div>
+          <div class="status-card">
+            <div class="status-title">Integrity Constraints</div>
+            <div class="status-value status-online">Provably Active</div>
+            <div class="status-sub">Double-booking & Duplicate protection</div>
+          </div>
+        </div>
+
+        <div class="phase-roadmap">
+          <h3>Upcoming Capabilities (Phases 2–4)</h3>
+          <ul>
+            <li><strong>Phase 2:</strong> Judge Roster & Profile Management, Invitation Outbox Engine</li>
+            <li><strong>Phase 3:</strong> Automated Assignment Scheduling & Conflict-Free Matching</li>
+            <li><strong>Phase 4:</strong> Judge Attendance, Live Scoring & Export Tools</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2026 Department of Computer Science & Engineering. CSE Fest System.</p>
+      <p><a href="/health" target="_blank" class="footer-link">Check /health endpoint</a></p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
