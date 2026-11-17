@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CSE Fest — Judge & Assignment Management System</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -89,8 +90,8 @@
           </div>
           <div class="status-card">
             <div class="status-title">System Phase</div>
-            <div class="status-value">Phase 1 Active</div>
-            <div class="status-sub">Core Schema, Security & Auth</div>
+            <div class="status-value status-online">Phase 2 Active</div>
+            <div class="status-sub">Judges, Invitations & Magic Links</div>
           </div>
           <div class="status-card">
             <div class="status-title">Integrity Constraints</div>
@@ -99,12 +100,28 @@
           </div>
         </div>
 
+        <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+          <a href="dashboard.html" class="btn btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; background: #4f46e5;">
+            Live Operations Dashboard &rarr;
+          </a>
+          <a href="judges.html" class="btn btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+            Manage Judges Roster &rarr;
+          </a>
+          <a href="invite.html" class="btn btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+            Send & Track Invitations &rarr;
+          </a>
+          <a href="assignments.html" class="btn btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; background: #059669;">
+            Scheduling & Assignments &rarr;
+          </a>
+        </div>
+
         <div class="phase-roadmap">
-          <h3>Upcoming Capabilities (Phases 2–4)</h3>
+          <h3>Festival Capabilities (Phases 1–4)</h3>
           <ul>
-            <li><strong>Phase 2:</strong> Judge Roster & Profile Management, Invitation Outbox Engine</li>
-            <li><strong>Phase 3:</strong> Automated Assignment Scheduling & Conflict-Free Matching</li>
-            <li><strong>Phase 4:</strong> Judge Attendance, Live Scoring & Export Tools</li>
+            <li><strong>Phase 1:</strong> Database Schema & Authentication</li>
+            <li><strong>Phase 2:</strong> Judges Roster, Bulk Invitations, Expiring Magic Links, Blinded Conflict Declaration</li>
+            <li><strong>Phase 3 (Active):</strong> Session Assignments, Double-Booking Exclusion Constraint, Replacement Chaining, Feasibility Sweep & Real-time Attendance</li>
+            <li><strong>Phase 4:</strong> SMTP Outbox Delivery Worker, Live Scoring & Export Tools</li>
           </ul>
         </div>
       </section>

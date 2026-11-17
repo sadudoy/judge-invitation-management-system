@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Judge Portal — CSE Fest 2026</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="public-portal-body">
+  <div class="portal-card" id="portal-card">
+    <header class="portal-hero">
+      <div class="header-badge" style="margin-bottom: 8px;">CSE Fest 2026 &bull; Evaluator Invitation</div>
+      <h1 id="invitation-heading">Invitation to Judge</h1>
+      <p id="invitation-intro" class="subtitle">Loading invitation details...</p>
+      <div id="invitation-status-badge" style="margin-top: 12px;"></div>
+    </header>
+
+    <!-- Global alert message -->
+    <div id="portal-alert" class="alert" style="display: none; margin-bottom: 20px;"></div>
+
+    <!-- RSVP Section -->
+    <section id="rsvp-section" class="section-box" style="margin-top: 0;">
+      <h3 style="font-size: 1.15rem; margin-bottom: 6px;">1. Evaluation RSVP</h3>
+      <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 16px;">
+        Please confirm whether you will be able to evaluate submissions for this competition.
+      </p>
+
+      <div id="rsvp-active-container">
+        <div class="form-group">
+          <label for="rsvp-notes">Notes / Comments (Optional)</label>
+          <textarea 
+            id="rsvp-notes" 
+            rows="2" 
+            placeholder="Special requirements, remarks, or tentative scheduling conditions..."
+            style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 0.875rem;"
+          ></textarea>
+        </div>
+
+        <div class="rsvp-actions">
+          <button type="button" class="rsvp-btn rsvp-btn-accept" id="btn-accept">
+            &check; Accept Invitation
+          </button>
+          <button type="button" class="rsvp-btn rsvp-btn-tentative" id="btn-tentative">
+            &quest; Tentative
+          </button>
+          <button type="button" class="rsvp-btn rsvp-btn-decline" id="btn-decline">
+            &times; Decline
+          </button>
+        </div>
+      </div>
+
+      <div id="rsvp-confirmed-message" style="display: none; padding: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; margin-top: 12px;">
+        <strong style="color: #166534;">Response Recorded:</strong>
+        <span id="confirmed-response-text" style="color: #166534;"></span>
+      </div>
+    </section>
+
+    <!-- Availability Windows Section -->
+    <section id="availability-section" class="section-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div>
+          <h3 style="font-size: 1.15rem;">2. Declared Availability</h3>
+          <p class="text-muted" style="font-size: 0.85rem;">Let us know the time windows you are available for judging.</p>
+        </div>
+        <button type="button" id="add-slot-btn" class="btn btn-secondary btn-sm">+ Add Window</button>
+      </div>
+
+      <div id="slots-container">
+        <!-- Dynamically injected slot rows -->
+      </div>
+
+      <button type="button" id="save-availability-btn" class="btn btn-primary btn-sm" style="margin-top: 12px;">
+        Save Availability
+      </button>
+    </section>
+
+    <!-- Conflicts of Interest Section -->
+    <section id="coi-section" class="section-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div>
+          <h3 style="font-size: 1.15rem;">3. Conflict of Interest Declaration</h3>
+          <p class="text-muted" style="font-size: 0.85rem;">
+            Declare any affiliations with students, teams, or institutions to ensure unbiased evaluation.
+          </p>
+        </div>
+        <button type="button" id="add-coi-btn" class="btn btn-secondary btn-sm">+ Declare Conflict</button>
+      </div>
+
+      <div id="coi-container">
+        <!-- Dynamically injected conflict entries -->
+      </div>
+
+      <button type="button" id="save-coi-btn" class="btn btn-primary btn-sm" style="margin-top: 12px;">
+        Submit Conflict Declarations
+      </button>
+    </section>
+
+    <!-- Phase 3: Judging Assignments & Self Check-In / Check-Out Section -->
+    <section id="assignments-section" class="section-box" style="display: none;">
+      <div style="margin-bottom: 12px;">
+        <h3 style="font-size: 1.15rem;">4. Your Judging Assignments & Session Check-In</h3>
+        <p class="text-muted" style="font-size: 0.85rem;">
+          Confirm scheduled sessions, view reporting requirements, and check in when you arrive on site.
+        </p>
+      </div>
+
+      <div id="judge-assignments-list">
+        <!-- Dynamically injected assignment cards -->
+      </div>
+    </section>
+
+    <footer style="margin-top: 30px; text-align: center; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 16px;">
+      CSE Fest &bull; Department of Computer Science & Engineering &bull; University Event Management
+    </footer>
+  </div>
+
+  <script src="/js/judge-portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+Hello {{judge_name}},
+
+You have been invited to serve as an evaluator/judge for {{competition_name}} at CSE Fest.
+
+Please access your secure response portal to confirm your attendance and declare availability:
+{{magic_link_url}}
+
+This link is confidential and valid until {{expires_at}}.
+
+Best regards,
+CSE Fest Organizing Committee

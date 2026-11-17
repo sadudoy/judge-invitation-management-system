@@ -275,3 +275,26 @@ test('Constraint: Session move re-syncs child assignments and preserves the cons
     );
   });
 });
+
+test('Constraint: draft invitations do not collide', async () => {
+  await runInRollback(async (client) => {
+    const judgeId = 4;
+    const competitionId = 1;
+
+    // First draft invitation
+    const draft1 = await client.query(`
+      INSERT INTO judge_invitations (judge_id, competition_id, invitation_token, status)
+      VALUES ($1, $2, 'inv-draft-collide-test-1', 'draft')
+      RETURNING id;
+    `, [judgeId, competitionId]);
+    assert.ok(draft1.rows[0].id);
+
+    // Second draft invitation for the same (judge_id, competition_id) -> must also succeed
+    const draft2 = await client.query(`
+      INSERT INTO judge_invitations (judge_id, competition_id, invitation_token, status)
+      VALUES ($1, $2, 'inv-draft-collide-test-2', 'draft')
+      RETURNING id;
+    `, [judgeId, competitionId]);
+    assert.ok(draft2.rows[0].id);
+  });
+});

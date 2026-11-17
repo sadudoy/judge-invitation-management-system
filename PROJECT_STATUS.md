@@ -1,11 +1,14 @@
 # Project Status: CSE Fest Judge Invitation & Assignment Management System
 
-## Phase 1: Foundation & Administrative Authentication
+## Phase 4: Operations Dashboard, Outbox Worker, Reminders Scheduler & System Verification
 
-- **Status**: COMPLETE
-- **Current Milestone**: Phase 1 Verification and Delivery
-- **Release Version**: 1.0.0 (Phase 1)
-- **Last Verified**: 2026-11-16
+- **Status**: COMPLETE & VERIFIED
+- **Current Milestone**: Phase 4 Final Handover Gate Pass
+- **Release Version**: 1.0.0 (Final Release)
+- **Last Verified**: 2026-11-17
+- **Test Results**: 136 passing tests across 22 test suites (0 failures, 0 skips, 0 cancellations)
+- **Database Schema**: Strictly 19 public base tables, 2 materialized views (`mv_session_coverage`, `mv_judge_workload`)
+- **Applied Migrations**: All 7 migrations applied (001 through 007)
 
 ---
 
@@ -13,29 +16,45 @@
 
 | Component | Status | Details |
 |---|---|---|
-| **Database Schema** | Complete | 17 tables, 16 custom ENUMs, primary keys via `GENERATED ALWAYS AS IDENTITY`, foreign key indexes on all child relations. |
-| **Exclusion Constraints** | Complete | `no_double_booking` EXCLUDE constraint using `btree_gist` prevents judge double-booking (`23P01`). Adjacent sessions succeed; buffer collisions fail. |
-| **Partial Unique Indexes**| Complete | `uq_invitation_live` index on `judge_invitations (event_id, judge_id)` prevents concurrent live invitations (`23505`) while permitting re-invitation after cancellation. |
-| **Database Triggers** | Complete | `set_assignment_window` computes assignment windows; `resync_assignments_on_session_change` propagates session time moves; `audit_row` logs DML changes to `audit_log`. |
-| **Security & Hardening** | Complete | Immutable `judge_conflicts` table (`REVOKE UPDATE, DELETE`), Helmet security headers, `httpOnly`/`sameSite` cookies, bcrypt cost 12, parameterized SQL. |
-| **Migration Runner** | Complete | Lexicographic transactional runner with `--status` display and `schema_migrations` tracking. |
-| **Seed Engine** | Complete | Real bcrypt password generation (`ChangeMe123!`), 1 event, 5 venues, 5 competitions, 5 sessions, 8 judges, 3 availabilities, 3 conflicts, mixed invitations. |
-| **Express Backend** | Complete | Healthcheck endpoint (`/health`), session-based auth routes (`/api/auth/login`, `/logout`, `/me`), centralized error handler. |
-| **Client UI** | Complete | Accessible, responsive vanilla HTML/CSS/JS administrator login form and authenticated console. |
-| **Automated Test Suite** | Complete | 13 automated tests (`node:test` + `supertest`) covering health, auth lifecycle, and all database invariants. |
+| **Phase 4 Pre-Check & Schema Snapshot** | Complete | Appended Section 6 to `docs/SCHEMA_DRIFT.md` with migration log and schema snapshot. Confirmed 19 public tables invariant and zero credential leaks. |
+| **Operations Dashboard & Materialized Views** | Complete | Migration `007_phase4_dashboard_materialized_views.sql` created `mv_session_coverage` and `mv_judge_workload` with unique indexes, statement triggers, and debounced refresh (30s) tracking in `_control.mv_refresh_log`. Endpoints `GET /api/dashboard/summary` (13 KPIs), `/coverage`, `/workload`, `/feasibility`. |
+| **Outbox Worker with SMTP Delivery** | Complete | Concurrency-safe poll (`SELECT ... FOR UPDATE SKIP LOCKED`), Nodemailer SMTP transport, exponential backoff ($2^{\text{attempts}} \times 30\text{s}$), max 5 attempts with `'sent'`/`'failed'` transitions, audit insertion into `notification_deliveries`, isolated under `OUTBOX_WORKER === 'on'`. |
+| **Scheduled Reminders Worker** | Complete | Background daemon with daily sweeps for pending invitations (3–4 days prior), upcoming assignments (24h prior with ICS), and coordinator late alerts. Deduplicating idempotency keys (`reminder:{kind}:{id}:{YYYY-MM-DD}`). |
+| **RFC 5545 iCalendar Generator** | Complete | `server/lib/ics.js` generates compliant `.ics` calendar events with UTC formatting, `Asia/Dhaka` `VTIMEZONE`, 75-character RFC line folding, and CRLF injection sanitization. |
+| **Security Hardening** | Complete | `POST /api/auth/password` with session invalidation (`DELETE FROM session`), `GET /api/audit` admin viewer, correlation `X-Request-Id`, production error masking, HSTS restricted to `NODE_ENV=production`. Documented in `docs/SECURITY.md`. |
+| **Client UI & Navigation** | Complete | `client/dashboard.html` and `client/js/dashboard.js` with KPI cards, feasibility meter, coverage table, workload table, audit trail viewer, and 60-second polling. Unified navigation links across all HTML views. |
+| **Handover Documentation** | Complete | Authored `DEPLOYMENT.md`, `TESTING.md`, `CHANGELOG.md`, updated `README.md`, `docs/SCHEDULING.md`, `docs/API.md`, and `docs/SCHEMA_DRIFT.md`. |
+| **System-Wide Playwright Regression** | Complete | `scripts/system-regression.js` verified end-to-end browser flow using Microsoft Edge channel (Admin login $\to$ Create judge $\to$ Bulk invite $\to$ RSVP accept $\to$ Assign session $\to$ Overlap/duplicate 409 $\to$ Check-in/out $\to$ Dashboard KPI rollup). Exited with code 0. |
 
 ---
 
-### Verification Proof
-- `npm run migrate`: Successfully applied 3 migrations (`001_schema.sql`, `002_triggers.sql`, `003_session_store.sql`).
-- `npm run migrate:status`: All 3 migrations reported as Applied.
-- `npm run seed`: Seeded reference event data and inserted 2 administrators with bcrypt cost 12.
-- `npm test`: 13 passing tests across `tests/health.test.js`, `tests/auth.test.js`, and `tests/constraints.test.js`.
-- `curl -i http://localhost:3000/health`: Responded with `HTTP/1.1 200 OK` and `{ "status": "ok", "db": "ok" }`.
-
----
-
-### Upcoming Phases
-- **Phase 2**: Judge Roster Management, Invitation Tokens, Email Outbox Dispatcher, and Judge RSVP Portal.
-- **Phase 3**: Automated Assignment Scheduling, Conflict-Free Solver, and Load Balancing.
-- **Phase 4**: Day-of Attendance Tracking, Live Rubric Scoring, and Export Utilities.
+### Verification Proof Summary
+- `npm run migrate:status`: All 7 migrations applied (`001` through `007`).
+- `SELECT count(*) FROM pg_tables WHERE schemaname = 'public'`: Exactly 19 public base tables.
+- `SELECT count(*) FROM pg_matviews WHERE schemaname = 'public'`: Exactly 2 materialized views.
+- `npm test`: **136/136 tests passing** (0 failures, 0 skips, 0 cancellations) across 22 suites:
+  - `tests/health.test.js` (1 test)
+  - `tests/auth.test.js` (6 tests)
+  - `tests/constraints.test.js` (7 tests)
+  - `tests/audit.test.js` (2 tests)
+  - `tests/rbac.test.js` (3 tests)
+  - `tests/judges.test.js` (10 tests)
+  - `tests/invitations.test.js` (9 tests)
+  - `tests/magic-link.test.js` (7 tests)
+  - `tests/availability.test.js` (5 tests)
+  - `tests/coi.test.js` (5 tests)
+  - `tests/outbox-producer.test.js` (4 tests)
+  - `tests/assignments.test.js` (15 tests)
+  - `tests/coverage.test.js` (9 tests)
+  - `tests/assignment-portal.test.js` (7 tests)
+  - `tests/attendance.test.js` (8 tests)
+  - `tests/replacement.test.js` (7 tests)
+  - `tests/scheduling-doc.test.js` (4 tests)
+  - `tests/dashboard.test.js` (6 tests)
+  - `tests/ics.test.js` (5 tests)
+  - `tests/outbox-worker.test.js` (5 tests)
+  - `tests/reminders.test.js` (4 tests)
+  - `tests/security-hardening.test.js` (6 tests)
+- `git grep -Il "lpha123"`: Zero occurrences.
+- `git ls-files | grep -E '^\.env|/\.env$'`: Zero occurrences (no tracked `.env` files).
+- Playwright automated regression run: All 10 workflow steps passed cleanly (`scripts/system-regression.js`).

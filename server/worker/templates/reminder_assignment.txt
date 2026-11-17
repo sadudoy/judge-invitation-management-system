@@ -1,0 +1,12 @@
+Hello {{judge_name}},
+
+This is a reminder that your judging session at CSE Fest begins in approximately 24 hours:
+Session: {{session_name}}
+Start: {{start_time}}
+Venue: {{venue_name}}
+
+Please report 15 minutes before the start time.
+Portal: {{magic_link_url}}
+
+Best regards,
+CSE Fest Organizing Committee

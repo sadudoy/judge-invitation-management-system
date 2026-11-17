@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Judge Invitations — CSE Fest Management</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="admin-container">
+    <nav class="nav-bar">
+      <a href="index.html" class="nav-brand">
+        <span class="header-badge" style="margin-bottom: 0;">CSE Fest 2026</span>
+        <span>Invitations Management</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="dashboard.html" class="nav-link">Live Dashboard</a></li>
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="judges.html" class="nav-link">Judges</a></li>
+        <li><a href="invite.html" class="nav-link active">Invitations</a></li>
+        <li><a href="assignments.html" class="nav-link">Assignments</a></li>
+        <li><button id="logout-btn" class="btn btn-secondary btn-sm">Sign Out</button></li>
+      </ul>
+    </nav>
+
+    <header class="toolbar">
+      <div>
+        <h2>Send & Track Judge Invitations</h2>
+        <p class="subtitle">Bulk invite evaluators with magic links, automated deduping, and lifecycle management.</p>
+      </div>
+      <div>
+        <button id="open-bulk-modal-btn" class="btn btn-primary">+ Send Bulk Invitations</button>
+      </div>
+    </header>
+
+    <!-- Recent Outbox & Invitations Results Banner (if bulk recently sent) -->
+    <div id="bulk-result-banner" class="alert alert-success" style="display: none; margin-bottom: 20px;"></div>
+
+    <!-- Active Invitations Management Table -->
+    <div class="card" style="padding: 18px; margin-bottom: 20px;">
+      <div class="toolbar" style="margin-bottom: 0;">
+        <div class="filters-group">
+          <select id="filter-competition" class="filter-select" aria-label="Filter by competition">
+            <option value="">All Competitions</option>
+          </select>
+          <select id="filter-status" class="filter-select" aria-label="Filter by status">
+            <option value="">All Statuses</option>
+            <option value="sent">Sent</option>
+            <option value="viewed">Viewed</option>
+            <option value="accepted">Accepted</option>
+            <option value="tentative">Tentative</option>
+            <option value="declined">Declined</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div id="invitations-count" class="text-muted" style="font-size: 0.85rem;">Loading...</div>
+      </div>
+    </div>
+
+    <div class="data-table-container">
+      <table class="data-table" aria-label="Invitations Table">
+        <thead>
+          <tr>
+            <th>Judge</th>
+            <th>Competition</th>
+            <th>Status</th>
+            <th>Sent At</th>
+            <th>Expires At</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="invitations-tbody">
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 24px;" class="text-muted">Loading invitations...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Send Bulk Invitations Modal -->
+  <div id="bulk-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true">
+    <div class="modal-box" style="max-width: 640px;">
+      <div class="modal-header">
+        <h3>Send Judge Invitations</h3>
+        <button id="close-bulk-modal-btn" class="close-btn" aria-label="Close">&times;</button>
+      </div>
+      <div id="bulk-modal-error" class="alert alert-error" style="display: none;"></div>
+      <form id="bulk-invite-form" novalidate>
+        <div class="form-group">
+          <label for="modal-competition">Target Competition *</label>
+          <select id="modal-competition" required style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;">
+            <option value="">Select a competition...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="deadline-hours">Response Deadline</label>
+          <select id="deadline-hours" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;">
+            <option value="24">24 Hours</option>
+            <option value="48">48 Hours (2 Days)</option>
+            <option value="72" selected>72 Hours (3 Days)</option>
+            <option value="168">7 Days (1 Week)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Select Judges to Invite *</label>
+          <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+            <input type="text" id="judge-search-picker" class="search-input" placeholder="Filter active judges..." style="flex: 1;">
+            <button type="button" id="select-all-btn" class="btn btn-secondary btn-sm">Select All</button>
+            <button type="button" id="deselect-all-btn" class="btn btn-secondary btn-sm">Clear</button>
+          </div>
+          <div id="judges-picker-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; background: #f8fafc;">
+            <p class="text-muted" style="font-size: 0.85rem;">Loading active judges...</p>
+          </div>
+          <small class="text-muted">Judges who already have a live invitation for this competition will be automatically skipped.</small>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" id="cancel-bulk-modal-btn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="send-bulk-btn" class="btn btn-primary">Dispatch Invitations</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/invite.js"></script>
+</body>
+</html>

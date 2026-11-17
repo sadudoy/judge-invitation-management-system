@@ -1,0 +1,7 @@
+Coordinator Notice:
+
+Judge {{judge_name}} has declined assignment for session: {{session_name}}.
+Reason provided: {{reason}}
+Assignment ID: {{assignment_id}}
+
+Please review the replacement roster in the admin console.

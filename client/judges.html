@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Judges Roster — CSE Fest Management</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="admin-container">
+    <nav class="nav-bar">
+      <a href="index.html" class="nav-brand">
+        <span class="header-badge" style="margin-bottom: 0;">CSE Fest 2026</span>
+        <span>Judges Roster</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="dashboard.html" class="nav-link">Live Dashboard</a></li>
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="judges.html" class="nav-link active">Judges</a></li>
+        <li><a href="invite.html" class="nav-link">Invitations</a></li>
+        <li><a href="assignments.html" class="nav-link">Assignments</a></li>
+        <li><button id="logout-btn" class="btn btn-secondary btn-sm">Sign Out</button></li>
+      </ul>
+    </nav>
+
+    <header class="toolbar">
+      <div>
+        <h2>Judges Directory</h2>
+        <p class="subtitle">Search, filter, manage profiles, and track evaluation records.</p>
+      </div>
+      <div>
+        <button id="open-add-judge-btn" class="btn btn-primary">+ Add New Judge</button>
+      </div>
+    </header>
+
+    <div class="card" style="margin-bottom: 24px; padding: 18px;">
+      <div class="toolbar" style="margin-bottom: 0;">
+        <div class="filters-group">
+          <input 
+            type="search" 
+            id="search-input" 
+            class="search-input" 
+            placeholder="Search by name, email, or org..." 
+            aria-label="Search judges"
+          >
+          <select id="filter-kind" class="filter-select" aria-label="Filter by kind">
+            <option value="">All Kinds</option>
+            <option value="academic">Academic</option>
+            <option value="industry">Industry</option>
+            <option value="alumni">Alumni</option>
+            <option value="other">Other</option>
+          </select>
+          <select id="filter-status" class="filter-select" aria-label="Filter by status">
+            <option value="">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div id="results-count" class="text-muted" style="font-size: 0.85rem;">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Judges Data Table -->
+    <div class="data-table-container">
+      <table class="data-table" aria-label="Judges List">
+        <thead>
+          <tr>
+            <th>Judge Name</th>
+            <th>Email & Contact</th>
+            <th>Organization & Designation</th>
+            <th>Kind</th>
+            <th>Status</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="judges-tbody">
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 32px;" class="text-muted">
+              Loading judges data...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="toolbar" style="margin-top: 10px;">
+      <button id="prev-page-btn" class="btn btn-secondary btn-sm" disabled>&larr; Previous</button>
+      <span id="page-indicator" class="text-muted" style="font-size: 0.85rem;">Page 1</span>
+      <button id="next-page-btn" class="btn btn-secondary btn-sm" disabled>Next &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Add / Edit Judge Modal -->
+  <div id="judge-modal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-title">Add New Judge</h3>
+        <button id="close-modal-btn" class="close-btn" aria-label="Close">&times;</button>
+      </div>
+      <div id="modal-error" class="alert alert-error" style="display: none;"></div>
+      <form id="judge-form" novalidate>
+        <input type="hidden" id="judge-id" name="id">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="first_name">First Name *</label>
+            <input type="text" id="first_name" name="first_name" required>
+          </div>
+          <div class="form-group">
+            <label for="last_name">Last Name *</label>
+            <input type="text" id="last_name" name="last_name" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="judge-email">Email Address *</label>
+          <input type="email" id="judge-email" name="email" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="text" id="phone" name="phone">
+          </div>
+          <div class="form-group">
+            <label for="kind">Kind</label>
+            <select id="kind" name="kind">
+              <option value="academic">Academic</option>
+              <option value="industry">Industry</option>
+              <option value="alumni">Alumni</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="organization">Organization</label>
+            <input type="text" id="organization" name="organization">
+          </div>
+          <div class="form-group">
+            <label for="designation">Designation</label>
+            <input type="text" id="designation" name="designation">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="expertise">Expertise (comma-separated)</label>
+          <input type="text" id="expertise" name="expertise" placeholder="AI, Cloud, Database Systems">
+        </div>
+        <div class="form-group">
+          <label for="bio">Bio / Notes</label>
+          <textarea id="bio" name="bio" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button type="button" id="cancel-modal-btn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="save-judge-btn" class="btn btn-primary">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- History Drawer -->
+  <div id="history-drawer" class="drawer-backdrop" style="display: none;">
+    <div class="drawer-panel">
+      <div class="drawer-header">
+        <div>
+          <h3 id="drawer-judge-name">Judge History</h3>
+          <p id="drawer-judge-sub" class="text-muted" style="font-size: 0.85rem;"></p>
+        </div>
+        <button id="close-drawer-btn" class="close-btn" aria-label="Close">&times;</button>
+      </div>
+      <div id="drawer-content">
+        <p class="text-muted">Loading history...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/judges.js"></script>
+</body>
+</html>

@@ -87,11 +87,11 @@ VALUES
   (5, 4, 'Alim Hossain', 'Robotics Institute', 'institutional', 'Affiliated with student home department.');
 
 -- Mixed-State Invitations
-INSERT INTO judge_invitations (event_id, judge_id, invitation_token, status, sent_at, expires_at)
+INSERT INTO judge_invitations (event_id, competition_id, judge_id, invitation_token, status, sent_at, expires_at)
 VALUES
-  (1, 1, 'inv-tok-111111111111', 'accepted', '2026-11-01 10:00:00+06', '2026-11-15 23:59:59+06'),
-  (1, 2, 'inv-tok-222222222222', 'accepted', '2026-11-01 10:00:00+06', '2026-11-15 23:59:59+06'),
-  (1, 3, 'inv-tok-333333333333', 'invited', '2026-11-02 11:00:00+06', '2026-11-16 23:59:59+06'),
-  (1, 4, 'inv-tok-444444444444', 'draft', NULL, NULL),
-  (1, 5, 'inv-tok-555555555555', 'declined', '2026-11-02 12:00:00+06', '2026-11-16 23:59:59+06'),
-  (1, 6, 'inv-tok-666666666666', 'cancelled', '2026-11-03 14:00:00+06', '2026-11-17 23:59:59+06');
+  (1, 1, 1, 'inv-tok-111111111111', 'accepted', '2026-11-01 10:00:00+06', '2026-11-15 23:59:59+06'),
+  (1, 2, 2, 'inv-tok-222222222222', 'accepted', '2026-11-01 10:00:00+06', '2026-11-15 23:59:59+06'),
+  (1, 3, 3, 'inv-tok-333333333333', 'invited', '2026-11-02 11:00:00+06', '2026-11-16 23:59:59+06'),
+  (1, 4, 4, 'inv-tok-444444444444', 'draft', NULL, NULL),
+  (1, 4, 5, 'inv-tok-555555555555', 'declined', '2026-11-02 12:00:00+06', '2026-11-16 23:59:59+06'),
+  (1, 5, 6, 'inv-tok-666666666666', 'cancelled', '2026-11-03 14:00:00+06', '2026-11-17 23:59:59+06');

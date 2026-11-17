@@ -1,0 +1,11 @@
+Hello {{judge_name}},
+
+Thank you for submitting your RSVP for {{competition_name}} at CSE Fest.
+Response status: {{status}}
+
+If you accepted, our coordinators will follow up with your specific judging session assignments.
+Access your portal anytime at:
+{{magic_link_url}}
+
+Best regards,
+CSE Fest Organizing Committee

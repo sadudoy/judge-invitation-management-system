@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignments & Coverage — CSE Fest Management</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+    .badge-held { background: #fef3c7; color: #92400e; }
+    .badge-confirmed { background: #dcfce7; color: #166534; }
+    .badge-replaced { background: #f3e8ff; color: #6b21a8; }
+    .badge-cancelled { background: #fee2e2; color: #991b1b; }
+    
+    .att-checked_in { background: #dcfce7; color: #166534; }
+    .att-late { background: #fef08a; color: #854d0e; font-weight: 700; }
+    .att-early_departure { background: #ffedd5; color: #9a3412; }
+    .att-absent { background: #fee2e2; color: #991b1b; font-weight: 700; }
+    .att-not_arrived { background: #f1f5f9; color: #475569; }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 8px;
+      max-width: 520px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <nav class="nav-bar">
+      <a href="index.html" class="nav-brand">
+        <span class="header-badge" style="margin-bottom: 0;">CSE Fest 2026</span>
+        <span>Scheduling & Coverage</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="dashboard.html" class="nav-link">Live Dashboard</a></li>
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="judges.html" class="nav-link">Judges</a></li>
+        <li><a href="invite.html" class="nav-link">Invitations</a></li>
+        <li><a href="assignments.html" class="nav-link active">Assignments</a></li>
+        <li><button id="logout-btn" class="btn btn-secondary btn-sm">Sign Out</button></li>
+      </ul>
+    </nav>
+
+    <!-- Top Alert Box -->
+    <div id="page-alert" class="alert" style="display: none; margin-bottom: 20px;"></div>
+
+    <!-- Feasibility Overview Banner -->
+    <section class="card" style="margin-bottom: 24px; padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h2 style="font-size: 1.25rem; margin-bottom: 4px;">Festival Peak Concurrency & Feasibility</h2>
+          <p class="subtitle" style="font-size: 0.875rem;">Calculates peak simultaneous judging demand across all session intervals via interval-sweep algorithm.</p>
+        </div>
+        <button id="btn-check-feasibility" class="btn btn-secondary btn-sm">Refresh Feasibility Sweep</button>
+      </div>
+
+      <div class="status-grid" style="margin-top: 16px;">
+        <div class="status-card">
+          <div class="status-title">Peak Concurrent Judges</div>
+          <div id="feat-peak" class="status-value">-</div>
+          <div class="status-sub">Max overlapping slots</div>
+        </div>
+        <div class="status-card">
+          <div class="status-title">Active Judge Pool</div>
+          <div id="feat-available" class="status-value">-</div>
+          <div class="status-sub">Active evaluators</div>
+        </div>
+        <div class="status-card">
+          <div class="status-title">Feasibility Assessment</div>
+          <div id="feat-status" class="status-value status-online">Evaluating...</div>
+          <div id="feat-deficit" class="status-sub">-</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Session Selector & Coverage Header -->
+    <section class="card" style="margin-bottom: 24px; padding: 20px;">
+      <div class="toolbar" style="margin-bottom: 16px;">
+        <div class="filters-group">
+          <div>
+            <label for="select-competition" style="font-size: 0.8rem; margin-bottom: 4px;">Select Competition</label>
+            <select id="select-competition" class="filter-select">
+              <option value="">Loading competitions...</option>
+            </select>
+          </div>
+          <div>
+            <label for="select-session" style="font-size: 0.8rem; margin-bottom: 4px;">Select Session</label>
+            <select id="select-session" class="filter-select" style="min-width: 220px;" disabled>
+              <option value="">Choose competition first</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: flex-end;">
+          <button id="btn-flag-absent" class="btn btn-danger btn-sm" disabled>
+            Flag Absent (Post-Grace)
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Coverage Snapshot -->
+      <div id="coverage-box" style="display: none; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 6px; padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h3 id="cov-session-name" style="font-size: 1.1rem; font-weight: 700;">-</h3>
+            <p id="cov-session-meta" class="text-muted" style="font-size: 0.85rem;">-</p>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <span id="cov-badge-status" class="badge">Coverage</span>
+            <span id="cov-badge-head" class="badge">Head Judge</span>
+          </div>
+        </div>
+        <div id="cov-gaps" style="margin-top: 10px; font-size: 0.875rem; color: #b91c1c;"></div>
+      </div>
+    </section>
+
+    <!-- Main 2-Column Split: Assigned Judges vs Candidate Pool -->
+    <div class="grid-2col">
+      <!-- Left: Assigned Judges & Attendance -->
+      <section class="card" style="padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <h3 style="font-size: 1.1rem;">Assigned Judges</h3>
+            <p class="text-muted" style="font-size: 0.8rem;">Enforced by PostgreSQL EXCLUDE gist constraint</p>
+          </div>
+          <span id="assigned-count" class="badge badge-role">0</span>
+        </div>
+
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Judge</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Attendance</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="assignments-tbody">
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                  Select a session to view assigned judges.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Right: Candidate Pool (Conflict-Free & Overlap-Free) -->
+      <section class="card" style="padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <h3 style="font-size: 1.1rem;">Available Candidates</h3>
+            <p class="text-muted" style="font-size: 0.8rem;">Auto-filtered: No Overlaps, No Hard COI</p>
+          </div>
+          <span id="candidates-count" class="badge badge-role">0</span>
+        </div>
+
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Candidate</th>
+                <th>Kind</th>
+                <th>Assign Role</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="candidates-tbody">
+              <tr>
+                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                  Select a session to view eligible candidates.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Replace Judge Modal -->
+    <div id="replace-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-box">
+        <h3 style="margin-bottom: 8px;">Replace Judge</h3>
+        <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 16px;">
+          Choose an eligible replacement evaluator or leave vacant to open a vacancy. Old assignment will be chained to the new assignment.
+        </p>
+
+        <form id="replace-form">
+          <input type="hidden" id="replace-assignment-id">
+
+          <div class="form-group">
+            <label for="replace-candidate-select">Replacement Judge (Optional)</label>
+            <select id="replace-candidate-select" class="filter-select" style="width: 100%;">
+              <option value="">Leave Vacant (No immediate replacement)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="replace-reason">Reason for Replacement</label>
+            <textarea id="replace-reason" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;" placeholder="Emergency conflict, sickness, flight delay..."></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+            <button type="button" id="replace-cancel-btn" class="btn btn-secondary btn-sm">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm">Confirm Replacement</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Edit Attendance Modal -->
+    <div id="attendance-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-box">
+        <h3 style="margin-bottom: 8px;">Edit Attendance Record</h3>
+        <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 16px;">
+          Administrative correction. Changes are logged permanently to the audit log.
+        </p>
+
+        <form id="attendance-form">
+          <input type="hidden" id="att-assignment-id">
+
+          <div class="form-group">
+            <label for="att-status-select">Attendance Status</label>
+            <select id="att-status-select" class="filter-select" style="width: 100%;">
+              <option value="checked_in">Checked In</option>
+              <option value="late">Late Arrival</option>
+              <option value="early_departure">Early Departure</option>
+              <option value="absent">Absent / No-Show</option>
+              <option value="excused">Excused</option>
+              <option value="present">Present (General)</option>
+              <option value="not_arrived">Not Arrived</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="att-notes">Admin Note</label>
+            <input type="text" id="att-notes" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;" placeholder="Reason for manual override...">
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+            <button type="button" id="att-cancel-btn" class="btn btn-secondary btn-sm">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm">Update Attendance</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <footer class="app-footer" style="margin-top: 40px;">
+      <p>&copy; 2026 Department of Computer Science & Engineering. CSE Fest System.</p>
+    </footer>
+  </div>
+
+  <script src="js/assignments.js"></script>
+</body>
+</html>

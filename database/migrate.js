@@ -83,10 +83,30 @@ async function runMigrations(targetUrl, options = { silent: false }) {
         const filePath = path.join(MIGRATIONS_DIR, file);
         const sql = fs.readFileSync(filePath, 'utf8');
 
+        // In PostgreSQL, ALTER TYPE ... ADD VALUE cannot be executed in the same transaction
+        // as subsequent statements that reference the new enum value.
+        // We execute any ALTER TYPE ... ADD VALUE statements pre-transaction so they commit immediately.
+        const alterTypeRegex = /ALTER\s+TYPE\s+[\s\S]*?ADD\s+VALUE\s+[\s\S]*?;/gi;
+        const alterTypeMatches = sql.match(alterTypeRegex);
+        let transactionSql = sql;
+
+        if (alterTypeMatches) {
+          for (const alterStmt of alterTypeMatches) {
+            try {
+              await client.query(alterStmt);
+            } catch (enumErr) {
+              if (!enumErr.message.includes('already exists') && enumErr.code !== '42710') {
+                throw enumErr;
+              }
+            }
+          }
+          transactionSql = sql.replace(alterTypeRegex, '-- [ALTER TYPE executed pre-transaction]');
+        }
+
         // Execute in transaction
         await client.query('BEGIN');
         try {
-          await client.query(sql);
+          await client.query(transactionSql);
           await client.query('INSERT INTO schema_migrations (name) VALUES ($1);', [file]);
           await client.query('COMMIT');
           appliedCount++;

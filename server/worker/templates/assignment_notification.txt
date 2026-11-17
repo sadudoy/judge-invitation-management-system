@@ -1,0 +1,16 @@
+Hello {{judge_name}},
+
+You have been assigned to judge the following session at CSE Fest:
+Session: {{session_name}}
+Role: {{role}}
+Start: {{start_time}}
+End: {{end_time}}
+Venue: {{venue_name}}
+
+Please confirm your attendance via your judging portal:
+{{magic_link_url}}
+
+An .ics calendar invitation is attached to this email.
+
+Best regards,
+CSE Fest Organizing Committee
